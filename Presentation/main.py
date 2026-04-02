@@ -21,7 +21,7 @@ def student_menu():
 Student menu:
 1) Add a new student
 2) Update a student's information
-3) Remove a student
+3) Remove a student from the system
 4) View all students
 Press "b" to return to the main menu
          """)
