@@ -10,8 +10,9 @@ from Models.StudentModel import StudentModel
 
 def create_student(f_name: str, l_name: str, email: str, major: str, year: int) -> StudentModel:
 
-    #Make SQL calls here
-    #Might need to add a unique constraint to email
+    #Call Student DAO and get dict
+    #No need to make email unique. Just use id
+    #Return a student object
 
     student = StudentModel(f_name, l_name, email, major, year)
     print("Calling DB to create a new student...")
@@ -24,5 +25,18 @@ def remove_student(email):
     
     print("Deleting student...")
     return
+
+def update_student(email):
+    #SQL call to update student's info
+
+    return
+
+def view_students():
+    
+    #SQL call to retrieve all the students
+
+    return
+
+
 
 
