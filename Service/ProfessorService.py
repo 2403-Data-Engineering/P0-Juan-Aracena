@@ -1,20 +1,21 @@
 from Models.ProfessorModel import ProfessorModel
+from Data.professor_dao import *
 
-def create_professor(f_name: str, l_name: str, department: str, email: str) -> ProfessorModel:
+def add_professor(f_name: str, l_name: str, department: str, email: str) -> ProfessorModel:
+    
+    create_professor(f_name, l_name, department, email)
     professor = ProfessorModel(f_name, l_name, department, email)
-
-    #SQL 
-
     return professor
 
 def remove_professor(email: str) -> None:
     #SQL call to remove professor
     return
 
-def update_student(email: str) -> None:
+#First, get a professor by using their id. Then, update the info
+def update_professor(p_id: int, f_name: str, l_name: str, department: str, email: str) -> None:
     #SQL call to update professor
     return
 
-def get_all_professors():
+def get_all_professors() -> None:
     #SQL call to get all professors
     return

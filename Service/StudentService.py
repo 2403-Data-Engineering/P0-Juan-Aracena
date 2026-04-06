@@ -1,5 +1,6 @@
 #Move this import to presentation after setting up database and testing dummy data
 from Models.StudentModel import StudentModel
+from Data.student_dao import *
 
 #Dummy data
 # student1 = StudentModel(1, "John", "Doe", "john@gmail.com", "computer science", 2015)
@@ -8,32 +9,36 @@ from Models.StudentModel import StudentModel
 
 # student_lst = [student1, student2, student3]
 
-def create_student(f_name: str, l_name: str, email: str, major: str, year: int) -> StudentModel:
+def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> StudentModel:
 
     #Call Student DAO and get dict
     #No need to make email unique. Just use id
     #Return a student object
 
+    create_student(f_name, l_name, email, major, year)
+
     student = StudentModel(f_name, l_name, email, major, year)
-    print("Calling DB to create a new student...")
     return student
 
 #Change arguments in case I decide to not add a unique constraint to emails
-def remove_student(email):
+def remove_student(id: int):
     
     #SQL call to retrieve student using the given email goes here
     
     print("Deleting student...")
     return
 
-def update_student(email):
+def update_student(id: int):
     #SQL call to update student's info
+
+    print("Updating student")
 
     return
 
 def view_students():
     
     #SQL call to retrieve all the students
+    get_all_students()
 
     return
 
