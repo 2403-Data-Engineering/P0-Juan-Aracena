@@ -1,6 +1,6 @@
 from Models.ClassModel import ClassModel
 
-def create_class(c_name: str) -> None:
+def create_class(c_name: str, course_code: str, p_id: int) -> None:
     print("SQL code")
 
 def select_all_classes() -> None:

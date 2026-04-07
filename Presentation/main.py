@@ -1,11 +1,13 @@
+from Service.StudentService import *
+
 def mainMenu():
     print("""
 =======================================
 Welcome to Generic University Admin
-1) Create a new student
-2) Create a new professor
-3) Create a new class
-4) Run report
+1) Student menu
+2) Professor menu
+3) Class menu
+4) Report menu
 Q) Quit
           """)
     
@@ -36,7 +38,14 @@ Press "b" to return to the main menu
             return "menu"
 
         case "2":
-            print("Calling update_student function...")
+            new_f_name = input("Enter the updated first name: (Press enter to skip)")
+            new_l_name = input("Enter the updated last name: (Press enter to skip)")
+            new_email = input("Enter the updated email: (Press enter to skip)")
+            new_major = input("Enter the updated major: (Press enter to skip)")
+            new_year = input("Enter the updated year: (Press enter to skip)")
+            
+            update_student_first_name(1, "Jake")
+            print("DONE")
             return "menu"
 
         case "3":

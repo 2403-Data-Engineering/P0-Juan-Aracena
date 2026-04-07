@@ -1,13 +1,6 @@
-#Move this import to presentation after setting up database and testing dummy data
 from Models.StudentModel import StudentModel
 from Data.student_dao import *
 
-#Dummy data
-# student1 = StudentModel(1, "John", "Doe", "john@gmail.com", "computer science", 2015)
-# student2 = StudentModel(2, "James", "Smith", "james@gmail.com", "biology", 2020)
-# student3 = StudentModel(3, "Paul", "Bond", "paul@gmail.com", "history", 2010)
-
-# student_lst = [student1, student2, student3]
 
 def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> StudentModel:
 
@@ -20,18 +13,86 @@ def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> 
     student = StudentModel(f_name, l_name, email, major, year)
     return student
 
-#Change arguments in case I decide to not add a unique constraint to emails
-def remove_student(id: int):
+def remove_student(s_id: int):
     
-    #SQL call to retrieve student using the given email goes here
-    
+    #SQL call to check if student is enrolled
+    try:
+        get_enrollment(s_id)
+        delete_student(s_id)
+
+    #Need to search what kind of exception I get when it fails
+    except:
+        print("Error")
+
     print("Deleting student...")
     return
 
-def update_student(id: int):
+def update_student_first_name(id: int, f_name: str):
+    
+    #SQL call to update student's info
+    student = get_student_by_id(id)
+    #Compare the name in student with f_name
+
+    #Call this is the name isn't the same
+    update_student_f_name(f_name, id)
+
+    print(student)
+
+    return
+
+def update_student_last_name(id: int, l_name: str):
     #SQL call to update student's info
 
-    print("Updating student")
+    student = get_student_by_id(id)
+    #Compare the name in student with l_name
+    #Code goes here
+
+    #Call this is the name isn't the same
+    update_student_l_name(l_name, id)
+
+    print(student)
+
+    return
+
+def update_student_email_address(id: int, email: str):
+    #SQL call to update student's info
+
+    student = get_student_by_id(id)
+    #Compare the name in student with f_name
+    #Code goes here
+
+    #Call this is the name isn't the same
+    update_student_email(email, id)
+
+    print(student)
+
+    return
+
+def update_student_degree(id: int, major: str):
+    #SQL call to update student's info
+
+    student = get_student_by_id(id)
+    #Compare the name in student with f_name
+    #Code goes here
+
+    #Call this is the name isn't the same
+    update_student_major(major, id)
+
+    print(student)
+
+    return
+
+def update_student_grad_year(id: int, year: int):
+    #SQL call to update student's info
+
+    student = get_student_by_id(id)
+    #Compare the name in student with f_name
+    #Code goes here
+
+    #Call this is the name isn't the same
+    update_student_year(year, id)
+
+    print(student)
 
     return
 
@@ -41,7 +102,6 @@ def view_students():
     get_all_students()
 
     return
-
 
 
 
