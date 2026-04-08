@@ -2,106 +2,154 @@ from Models.StudentModel import StudentModel
 from Data.student_dao import *
 
 
-def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> StudentModel:
+def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> None:
 
-    #Call Student DAO and get dict
-    #No need to make email unique. Just use id
-    #Return a student object
-
-    create_student(f_name, l_name, email, major, year)
-
+    #Raising value error to the presentation layer
+    try:
+        create_student(f_name, l_name, email, major, year)
+    except ValueError:
+        raise ValueError
+    
     student = StudentModel(f_name, l_name, email, major, year)
-    return student
+
+    print("")
+    print("Student created:")
+    print(f"ID: {student.s_id}")
+    print(f"First name: {student.f_name}")
+    print(f"Last name: {student.l_name}")
+    print(f"Email: {student.email}")
+    print(f"Major: {student.major}")
+    print(f"Year: {student.year}")
+
+    return
 
 def remove_student(s_id: int):
     
-    #SQL call to check if student is enrolled
-    try:
-        get_enrollment(s_id)
-        delete_student(s_id)
+    student = get_student_by_id(s_id)
 
-    #Need to search what kind of exception I get when it fails
-    except:
-        print("Error")
-
-    print("Deleting student...")
-    return
-
-def update_student_first_name(id: int, f_name: str):
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
     
-    #SQL call to update student's info
-    student = get_student_by_id(id)
-    #Compare the name in student with f_name
+    #Check if the student is enrolled in a class
+    enrollments = get_enrollment(s_id)
 
-    #Call this is the name isn't the same
-    update_student_f_name(f_name, id)
+    if len(enrollments) > 0:
+        print("Student is enrolled in one or more classes. Drop the student from the classes or enter a different ID")
+        return
 
-    print(student)
-
-    return
-
-def update_student_last_name(id: int, l_name: str):
-    #SQL call to update student's info
-
-    student = get_student_by_id(id)
-    #Compare the name in student with l_name
-    #Code goes here
-
-    #Call this is the name isn't the same
-    update_student_l_name(l_name, id)
-
-    print(student)
-
-    return
-
-def update_student_email_address(id: int, email: str):
-    #SQL call to update student's info
-
-    student = get_student_by_id(id)
-    #Compare the name in student with f_name
-    #Code goes here
-
-    #Call this is the name isn't the same
-    update_student_email(email, id)
-
-    print(student)
-
-    return
-
-def update_student_degree(id: int, major: str):
-    #SQL call to update student's info
-
-    student = get_student_by_id(id)
-    #Compare the name in student with f_name
-    #Code goes here
-
-    #Call this is the name isn't the same
-    update_student_major(major, id)
-
-    print(student)
-
-    return
-
-def update_student_grad_year(id: int, year: int):
-    #SQL call to update student's info
-
-    student = get_student_by_id(id)
-    #Compare the name in student with f_name
-    #Code goes here
-
-    #Call this is the name isn't the same
-    update_student_year(year, id)
-
-    print(student)
-
-    return
-
-def view_students():
+    delete_student(s_id)
+    print("Student deleted")
     
+    return
+
+def update_student_first_name(s_id: int, f_name: str) -> None:
+    
+    student = get_student_by_id(s_id)
+
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
+
+    #Compare the first name in student with f_name
+    if student["f_name"] == f_name:
+        print("The new first name is the same as the old one. Enter a new first name")
+        return
+
+    #Call this is the name isn't the same
+    update_student_f_name(f_name, s_id)
+
+    return
+
+def update_student_last_name(s_id: int, l_name: str) -> None:
+    
+    student = get_student_by_id(s_id)
+
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
+
+    #Compare the last name in student with l_name
+    if student["l_name"] == l_name:
+        print("The new last name is the same as the old one. Enter a new last name")
+        return
+    #Call this is the name isn't the same
+    update_student_l_name(l_name, s_id)
+
+    return
+
+def update_student_email_address(s_id: int, email: str) -> None:
+    
+    student = get_student_by_id(s_id)
+
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
+    
+    #Compare the email in student with f_name
+    if student["email"] == email:
+        print("The new email is the same as the old one. Enter a new email")
+        return
+
+    #Call this is the name isn't the same
+    update_student_email(email, s_id)
+
+    return
+
+def update_student_degree(s_id: int, major: str) -> None:
+
+    student = get_student_by_id(s_id)
+
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
+    
+    #Compare the major in student with major
+    if student["major"] == major:
+        print("The new major is the same as the old one. Enter a new major")
+        return
+
+    #Call this if the major isn't the same
+    update_student_major(major, s_id)
+
+    return
+
+def update_student_grad_year(s_id: int, year: int) -> None:
+    
+    student = get_student_by_id(s_id)
+
+    #Check if the id the user gave us exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid student ID")
+        return
+    
+    #Compare the year in student with year
+    if student["year"] == year:
+        print("The new graduation year is the same as the old one. Enter a new graduation year")
+        return
+
+    #Call this if the year isn't the same
+    update_student_year(year, s_id)
+
+    return
+
+def view_students() -> list[StudentModel]:
+
     #SQL call to retrieve all the students
-    get_all_students()
+    students_list = []
 
-    return
+    for row in get_all_students():
+        s_id = row.pop("s_id")
+        student = StudentModel(**row)
+        student.s_id = s_id
+        students_list.append(student)
+
+    return students_list
 
 
 

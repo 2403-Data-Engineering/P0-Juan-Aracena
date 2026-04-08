@@ -34,33 +34,111 @@ Press "b" to return to the main menu
     print("=======================================")
     match choice:
         case "1":
-            print("Calling create_student function...")
+            
+            first_name = input("Enter the first name of the student: ").strip().lower()
+            last_name = input('Enter the last name of the student: ').strip().lower()
+            email = input("Enter the email of the student: ").strip().lower()
+            major = input("Enter the major the student studied: ").strip().lower()
+            
+
+            year = None
+            year_check = True
+            while year_check:
+                try:
+                    year = int(input("Enter the year the student graduated: "))
+                    
+                    if year > 0:
+                        year_check = False
+
+                except ValueError:
+                    print("Not an integer value")
+
+            try:
+
+                add_student(first_name, last_name, email, major, year)
+
+            except ValueError:
+                return "1"
+
             return "menu"
 
         case "2":
-            new_f_name = input("Enter the updated first name: (Press enter to skip)")
-            new_l_name = input("Enter the updated last name: (Press enter to skip)")
-            new_email = input("Enter the updated email: (Press enter to skip)")
-            new_major = input("Enter the updated major: (Press enter to skip)")
-            new_year = input("Enter the updated year: (Press enter to skip)")
+            #Make sure the id is a number
+            s_id = None
+
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the id of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            new_f_name = input("Enter the updated first name: (Press enter to skip) ").strip().lower()
+            new_l_name = input("Enter the updated last name: (Press enter to skip) ").strip().lower()
+            new_email = input("Enter the updated email: (Press enter to skip) ").strip().lower()
+            new_major = input("Enter the updated major: (Press enter to skip) ").strip().lower()
             
-            update_student_first_name(1, "Jake")
-            print("DONE")
+            new_year = None
+            while new_year is None:
+                
+                try:
+                    new_year = int(input("Enter the updated year: (Press 0 to skip) ")).strip()
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+
+            if new_f_name:
+                update_student_first_name(s_id, new_f_name)
+            
+            if new_l_name:
+                update_student_last_name(s_id, new_l_name)
+
+            if new_email:
+                update_student_email(s_id, new_email)
+
+            if new_major:
+                update_student_major(s_id, new_major)
+
+            if new_year:
+                update_student_grad_year(s_id, new_year)
+
             return "menu"
 
         case "3":
-            print("Calling remove_student function...")
+            s_id = None
+
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the id of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            remove_student(s_id)
+
             return "menu"
             
         case "4":
-            print("Calling view_all_students function...")
+            students = view_students()
+
+            for index, student in enumerate(students, start=1):
+                print("")
+                print(f"Student #{index}:")
+                print(f"ID: {student.s_id}")
+                print(f"First name: {student.f_name}")
+                print(f"Last name: {student.l_name}")
+                print(f"Email: {student.email}")
+                print(f"Major: {student.major}")
+                print(f"Year: {student.year}")
+            
             return "menu"
         
         case "b":
             return "menu"
         
         case _:
-            print("Invalid key entered. Type a number to choose one of the options or the Enter key to go back to the main menu")
+            print("Invalid key entered. Type a number to choose one of the options or 'b' to go back to the main menu")
             return "1"
 
     return "menu"
@@ -99,7 +177,7 @@ Press "b" to return to the main menu
             return "menu"
         
         case _:
-            print("Invalid key entered. Type a number to choose one of the options or the Enter key to go back to the main menu")
+            print("Invalid key entered. Type a number to choose one of the options or the 'b' to go back to the main menu")
             return "2"
 
     return "menu"
@@ -153,7 +231,7 @@ Press "b" to return to the main menu
             return "menu"
         
         case _:
-            print("Invalid key entered. Type a number to choose one of the options or the Enter key to go back to the main menu")
+            print("Invalid key entered. Type a number to choose one of the options or 'b' to go back to the main menu")
             return "3"
         
     return "menu"      
@@ -183,7 +261,7 @@ Press "b" to return to the main menu
             return "menu"
         
         case _:
-            print("Invalid key entered. Type a number to choose one of the options or the Enter key to go back to the main menu")
+            print("Invalid key entered. Type a number to choose one of the options or 'b' to go back to the main menu")
             return "4"
         
     return "menu"

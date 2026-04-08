@@ -1,7 +1,10 @@
-from Models.ClassModel import ClassModel
+from Data.db_connection_manager import get_connection
+from mysql.connector import IntegrityError
 
 def create_class(c_name: str, course_code: str, p_id: int) -> None:
-    print("SQL code")
+    with get_connection as conn:
+        cursor = conn.cursor(dictionary=True)
+
 
 def select_all_classes() -> None:
     print("SQL code")
