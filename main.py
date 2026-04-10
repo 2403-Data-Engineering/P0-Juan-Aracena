@@ -1,4 +1,7 @@
 from Service.StudentService import *
+from Service.ProfessorService import *
+from Service.ClassService import *
+from Utils.report_writer import *
 
 def mainMenu():
     print("""
@@ -36,7 +39,7 @@ Press "b" to return to the main menu
         case "1":
             
             first_name = input("Enter the first name of the student: ").strip().lower()
-            last_name = input('Enter the last name of the student: ').strip().lower()
+            last_name = input("Enter the last name of the student: ").strip().lower()
             email = input("Enter the email of the student: ").strip().lower()
             major = input("Enter the major the student studied: ").strip().lower()
             
@@ -82,7 +85,7 @@ Press "b" to return to the main menu
             while new_year is None:
                 
                 try:
-                    new_year = int(input("Enter the updated year: (Press 0 to skip) ")).strip()
+                    new_year = int(input("Enter the updated year: (Press 0 to skip) "))
                 
                 except ValueError:
                     print("Not an integer value")
@@ -95,10 +98,13 @@ Press "b" to return to the main menu
                 update_student_last_name(s_id, new_l_name)
 
             if new_email:
-                update_student_email(s_id, new_email)
+                try:
+                    update_student_email_address(s_id, new_email)
+                except ValueError:
+                    return "1"
 
             if new_major:
-                update_student_major(s_id, new_major)
+                update_student_degree(s_id, new_major)
 
             if new_year:
                 update_student_grad_year(s_id, new_year)
@@ -110,7 +116,7 @@ Press "b" to return to the main menu
 
             while s_id is None:
                 try:
-                    s_id = int(input("Enter the id of the student: "))
+                    s_id = int(input("Enter the ID of the student: "))
                 
                 except ValueError:
                     print("Not an integer value")
@@ -158,19 +164,79 @@ Press "b" to return to the main menu
     print("=======================================")
     match choice:
         case "1":
-            print("Calling create_professor function...")
+            first_name = input("Enter the first name of the professor: ").strip().lower()
+            last_name = input("Enter the last name of the professor: ").strip().lower()
+            department = input("Enter the department of the professor: ").strip().lower()
+            email = input("Enter the email of the professor: ").strip().lower()
+
+            try:
+                add_professor(first_name, last_name, department, email)
+            
+            except ValueError:
+                return "2"
+
+
             return "menu"
 
         case "2":
-            print("Calling update_professor function...")
+            #Make sure the id is a number
+            p_id = None
+
+            while p_id is None:
+                try:
+                    p_id = int(input("Enter the id of the professor: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            new_f_name = input("Enter the updated first name: (Press enter to skip) ").strip().lower()
+            new_l_name = input("Enter the updated last name: (Press enter to skip) ").strip().lower()
+            new_department = input("Enter the updated department: (Press enter to skip) ").strip().lower()
+            new_email = input("Enter the updated email: (Press enter to skip) ").strip().lower()
+
+            if new_f_name:
+                update_professor_first_name(p_id, new_f_name)
+            
+            if new_l_name:
+                update_professor_last_name(p_id, new_l_name)
+
+            if new_department:
+                update_professor_department(p_id, new_department)
+
+            if new_email:
+                try:
+                    update_professor_email_address(p_id, new_email)
+                except ValueError:
+                    return "2"
+
             return "menu"
 
         case "3":
-            print("Calling remove_professor function...")
+            p_id = None
+
+            while p_id is None:
+                try:
+                    p_id = int(input("Enter the id of the professor: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            remove_professor(p_id)
+
             return "menu"
             
         case "4":
-            print("Calling view_all_professors function...")
+            professors = view_professors()
+
+            for index, professor in enumerate(professors, start=1):
+                print("")
+                print(f"Professor #{index}:")
+                print(f"ID: {professor.p_id}")
+                print(f"First name: {professor.f_name}")
+                print(f"Last name: {professor.l_name}")
+                print(f'Department: {professor.department}')
+                print(f"Email: {professor.email}")
+
             return "menu"
         
         case "b":
@@ -193,6 +259,7 @@ Class menu:
 5) Enroll a student in a class
 6) Drop a student from a class
 7) View all students enrolled in a class
+8) View all classes a given student is enrolled in
 Press "b" to return to the main menu
          """)
     
@@ -200,31 +267,200 @@ Press "b" to return to the main menu
     print("=======================================")
     match choice:
         case "1":
-            print("Calling create_class function...")
+            class_name = input("Enter the name of the class: ").strip().lower()
+            
+            course_code = None
+            while course_code is None:
+                try:
+                    course_code = input("Enter the course code: ")
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            p_id = None
+            while p_id is None:
+                try:
+                    p_id = input("Enter the ID of the professor you want to assign to this class: ")
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            add_class(class_name, course_code, p_id)
+
             return "menu"
 
         case "2":
-            print("Calling update_class function...")
+            c_id = None
+            while c_id is None:
+                try:
+                    c_id = input("Enter the ID of the class: ")
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            new_c_name = ""
+            while not new_c_name:
+                new_c_name = input("Enter the updated class name: ").strip().lower()
+
+                if not new_c_name:
+                    print("Class name cannot be empty. Please enter a valid name.")
+                    
+            new_course_code = None
+            while new_course_code is None:
+                
+                try:
+                    temp_input = int(input("Enter the updated course code: "))
+
+                    if temp_input == 0:
+                        print("Course code cannot be 0. Please enter a valid code.")
+                        new_course_code = None
+                    else:
+                        new_course_code = temp_input
+                
+                except ValueError:
+                    print("Not an integer value")
+                
+            new_p_id = None
+            while new_p_id is None:
+                try:
+                    new_p_id = int(input("Enter the updated professor ID: (Press 0 to skip) "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            if new_c_name or new_course_code:
+                change_class_name(c_id, new_c_name, new_course_code)
+               
+            if new_p_id:
+                change_class_professor(c_id, new_p_id)
+            
+            print("\nClass updated")
+
             return "menu"
 
         case "3":
-            print("Calling remove_class function...")
+            c_id = None
+            
+            while c_id is None:
+                try:
+                    c_id = int(input("Enter the ID of the class: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            remove_class(c_id)
+
             return "menu"
             
         case "4":
-            print("Calling view_all_classes function...")
+            class_list = view_classes()
+
+            for index, course in enumerate(class_list, start=1):
+                print("")
+                print(f"Class #{index}:")
+                print(f"ID: {course.c_id}")
+                print(f"Class name: {course.c_name}")
+                print(f"Course code: {course.course_code}")
+                print(f"Professor ID: {course.p_id}")
+
             return "menu"
         
         case "5":
-            print("Calling enroll_student function")
+            s_id = None
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the ID of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            c_id = None
+            
+            while c_id is None:
+                try:
+                    c_id = int(input("Enter the ID of the class: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            enroll_student(s_id, c_id)
+
             return "menu"
 
         case "6":
-            print("Calling drop_student function")
+            s_id = None
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the id of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            c_id = None
+            
+            while c_id is None:
+                try:
+                    c_id = int(input("Enter the ID of the class: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            drop_student(s_id, c_id)
+
             return "menu"
 
         case "7":
-            print("Calling view_students_in_class function")
+            c_id = None
+            
+            while c_id is None:
+                try:
+                    c_id = int(input("Enter the ID of the class: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            students = view_students_enrolled_in_class(c_id)
+
+            try:
+                for index, student in enumerate(students, start=1):
+                    print("")
+                    print(f"Student #{index}:")
+                    print(f"ID: {student.s_id}")
+                    print(f"First name: {student.f_name}")
+                    print(f"Last name: {student.l_name}")
+                    print(f"Email: {student.email}")
+                    print(f"Major: {student.major}")
+                    print(f"Year: {student.year}")
+            
+            except TypeError:
+                pass
+
+            return "menu"
+        
+        case "8":
+            s_id = None
+
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the ID of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+
+            class_list = view_all_classes_student_enrolled(s_id)
+
+            try:
+                for index, course in enumerate(class_list, start=1):
+                    print("")
+                    print(f"Class #{index}:")
+                    print(f"ID: {course.c_id}")
+                    print(f"Class name: {course.c_name}")
+                    print(f"Course code: {course.course_code}")
+                    print(f"Professor ID: {course.p_id}")
+                
+            except TypeError:
+                pass
+
             return "menu"
         
         case "b":
@@ -250,11 +486,34 @@ Press "b" to return to the main menu
 
     match choice:
         case "1":
-            print("Calling generate_student_report function")
+            s_id = None
+            while s_id is None:
+                try:
+                    s_id = int(input("Enter the id of the student: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            try:
+                generate_student_report(s_id)
+            except AttributeError:
+                pass
             return "menu"
         
         case "2":
-            print("Calling generate_professor_report function")
+            p_id = None
+
+            while p_id is None:
+                try:
+                    p_id = int(input("Enter the id of the professor: "))
+                
+                except ValueError:
+                    print("Not an integer value")
+            
+            try:
+                generate_professor_report(p_id)
+            except AttributeError:
+                    pass
             return "menu"
         
         case "b":

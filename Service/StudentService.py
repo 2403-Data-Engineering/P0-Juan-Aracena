@@ -6,7 +6,7 @@ def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> 
 
     #Raising value error to the presentation layer
     try:
-        create_student(f_name, l_name, email, major, year)
+        s_id = create_student(f_name, l_name, email, major, year)
     except ValueError:
         raise ValueError
     
@@ -14,7 +14,7 @@ def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> 
 
     print("")
     print("Student created:")
-    print(f"ID: {student.s_id}")
+    print(f"ID: {s_id}")
     print(f"First name: {student.f_name}")
     print(f"Last name: {student.l_name}")
     print(f"Email: {student.email}")
@@ -23,7 +23,7 @@ def add_student(f_name: str, l_name: str, email: str, major: str, year: int) -> 
 
     return
 
-def remove_student(s_id: int):
+def remove_student(s_id: int) -> None:
     
     student = get_student_by_id(s_id)
 
@@ -95,8 +95,13 @@ def update_student_email_address(s_id: int, email: str) -> None:
         print("The new email is the same as the old one. Enter a new email")
         return
 
-    #Call this is the name isn't the same
-    update_student_email(email, s_id)
+    #Check if the new enail isn't a duplicate
+    try: 
+        update_student_email(email, s_id)
+    
+    except ValueError:
+        raise ValueError
+
 
     return
 
@@ -150,6 +155,21 @@ def view_students() -> list[StudentModel]:
         students_list.append(student)
 
     return students_list
+
+def view_single_student(s_id: int) -> StudentModel:
+    student = get_student_by_id(s_id)
+    
+    #Check if the student exists
+    if len(student) == 0:
+        print("Couldn't find student. Enter a valid ID")
+        return
+    
+    new_s_id = student.pop("s_id")
+    student = StudentModel(**student)
+    student.s_id = new_s_id
+
+    return student
+
 
 
 

@@ -14,7 +14,7 @@ from mysql.connector import IntegrityError
 # conn.commit()
 # new_id = cursor.lastrowid
  
-def create_student(f_name: str, l_name: str, email: str, major: str, year: int) -> None:
+def create_student(f_name: str, l_name: str, email: str, major: str, year: int) -> int:
     with get_connection() as conn:
         cursor = conn.cursor(dictionary=True)
 
@@ -26,6 +26,9 @@ def create_student(f_name: str, l_name: str, email: str, major: str, year: int) 
             raise ValueError
 
         conn.commit()
+        new_id = cursor.lastrowid
+    
+    return new_id
 
 def get_all_students() -> list[dict]:
     with get_connection() as conn:
@@ -45,6 +48,21 @@ def get_student_by_id(s_id: int) -> dict[int, str, str, str, str, int]:
         
     return student
 
+#Service layer in ClassService will check for duplicate
+def create_enrollment(s_id: int, c_id: int) -> None:
+    with get_connection() as conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("INSERT INTO enrollment(s_id, c_id) VALUES (%s, %s)", (s_id, c_id))
+
+        conn.commit()
+
+def delete_enrollment(s_id: int, c_id: int) -> None:
+    with get_connection() as conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("DELETE FROM enrollment WHERE s_id = %s AND c_id = %s", (s_id, c_id))
+
+        conn.commit()
+
 
 def get_enrollment(s_id: int) -> dict[int, str, str, str, str, int]:
     with get_connection() as conn:
@@ -57,6 +75,17 @@ def get_enrollment(s_id: int) -> dict[int, str, str, str, str, int]:
         
         return enrollment
 
+def check_enrollment(s_id: int, c_id: int) -> dict[int, str, int, int]:
+    with get_connection() as conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM enrollment WHERE s_id = %s AND c_id = %s", (s_id, c_id))
+
+        enrollment = dict()
+        for row in cursor:
+            enrollment = row
+        
+        return enrollment
+    
 
 def update_student_f_name(f_name: str, s_id: int) -> None:
     with get_connection() as conn:
@@ -75,9 +104,16 @@ def update_student_l_name(l_name: str, s_id: int) -> None:
 def update_student_email(email: str, s_id: int) -> None:
     with get_connection() as conn:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("UPDATE students SET email = %s WHERE s_id = %s", (email, s_id))
 
-        conn.commit()
+        try:
+            cursor.execute("UPDATE students SET email = %s WHERE s_id = %s", (email, s_id))
+            conn.commit()
+
+        except IntegrityError:
+            print("\nDuplicate email found. Enter a different email")
+            raise ValueError
+        
+    return
 
 def update_student_major(major: str, s_id: int) -> None:
     with get_connection() as conn:

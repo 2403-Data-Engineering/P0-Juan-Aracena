@@ -35,11 +35,3 @@ create table enrollment(
 	foreign key(c_id) references classes(c_id)
 	
 );
-
-select *
-from students;
-
-select *
-from professors;
-
-drop table students, professors, classes, enrollment;

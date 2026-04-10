@@ -1,7 +1,7 @@
 from Data.db_connection_manager import get_connection
 from mysql.connector import IntegrityError 
 
-def create_professor(f_name: str, l_name: str, department: str, email: str) -> None:
+def create_professor(f_name: str, l_name: str, department: str, email: str) -> int:
     with get_connection() as conn:
         cursor = conn.cursor(dictionary=True)
 
@@ -13,6 +13,9 @@ def create_professor(f_name: str, l_name: str, department: str, email: str) -> N
             raise ValueError
 
         conn.commit()
+        new_id = cursor.lastrowid
+
+    return new_id
 
 def get_all_professors() -> None:
     with get_connection() as conn:
@@ -67,8 +70,14 @@ def update_professor_dept(department: str, p_id: int) -> None:
 def update_professor_email(email: str, p_id: int) -> None:
     with get_connection() as conn:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("UPDATE professors SET email = %s WHERE p_id = %s", (email, p_id))
 
+        try:
+            cursor.execute("UPDATE professors SET email = %s WHERE p_id = %s", (email, p_id))
+
+        except IntegrityError:
+            print("\nDuplicate email found. Enter a different email")
+            raise ValueError
+        
         conn.commit()
     
 def delete_professor(p_id: int) -> None:

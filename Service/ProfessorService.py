@@ -4,7 +4,7 @@ from Data.professor_dao import *
 def add_professor(f_name: str, l_name: str, department: str, email: str) -> ProfessorModel:
     
     try:
-        create_professor(f_name, l_name, department, email)
+        p_id = create_professor(f_name, l_name, department, email)
     
     except ValueError:
         raise ValueError
@@ -13,7 +13,7 @@ def add_professor(f_name: str, l_name: str, department: str, email: str) -> Prof
     
     print("")
     print("Professor created:")
-    print(f"ID: {professor.p_id}")
+    print(f"ID: {p_id}")
     print(f"First name: {professor.f_name}")
     print(f"Last name: {professor.l_name}")
     print(f"Department: {professor.department}")
@@ -35,6 +35,7 @@ def remove_professor(p_id: int) -> None:
 
     if len(classes_assigned) > 0:
         print("Professor is assigned to one or more classes. Remove the professor from the classes or enter a different ID")
+        return
 
     delete_professor(p_id)
     print("Professor deleted")
@@ -111,12 +112,16 @@ def update_professor_email_address(p_id: int, email: str) -> None:
         print("The new email is the same as the old one. Enter a new email")
         return
 
-    #Call this if the email isn't the same
-    update_professor_email(email, p_id)
-
+    #Check if the new enail isn't a duplicate
+    try: 
+        update_professor_email(email, p_id)
+    
+    except ValueError:
+        raise ValueError
+    
     return
 
-def view_professors() -> None:
+def view_professors() -> list[ProfessorModel]:
     
     #SQL call to get all professors
     professors_list = []
@@ -128,3 +133,17 @@ def view_professors() -> None:
         professors_list.append(professor)
 
     return professors_list
+
+def view_single_professor(p_id: int) -> ProfessorModel:
+    professor = get_professor_by_id(p_id)
+    
+    #Check if the professor exists
+    if len(professor) == 0:
+        print("Couldn't find professor. Enter a valid ID")
+        return
+    
+    new_p_id = professor.pop("p_id")
+    professor = ProfessorModel(**professor)
+    professor.p_id = new_p_id
+
+    return professor
